@@ -21,3 +21,7 @@ yarn-error.log
 .phpunit
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+
+###< IDEA preferences >###
+/.idea/*
+/.idea/workspace.xml
