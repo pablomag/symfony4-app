@@ -1,0 +1,7 @@
+.box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .25); }
+.container { width: 45%; }
+.post-padding { padding: 0 2.5rem; }
+.left-padding { padding-left: 2.5rem; }
+.right-padding { padding-right: 2.5rem; }
+.post-button { width: min-content; padding-right: 1.5rem; }
+.flash-message { margin: 0 10rem !important; }

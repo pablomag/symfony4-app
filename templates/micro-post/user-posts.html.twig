@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}@{{ user.username }}'s details{% endblock %}
+
+{% block body %}
+	<div class="card-group p-1">
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">
+					{{ user.fullname }}
+					<small>@{{ user.username }}</small>
+				</h5>
+
+				{% if user != app.user %}
+					{% if user.followers.contains(app.user) == false %}
+						<a href="{{ path('following_follow', {'id': user.id}) }}" class="btn btn-outline-primary">Follow</a>
+					{% else %}
+						<a href="{{ path('following_unfollow', {'id': user.id}) }}" class="btn btn-outline-warning">Unfollow</a>
+					{% endif %}
+					{% if is_granted('ROLE_USER') %}
+					{% else %}
+						<div class="pt-1">
+							<small class="text-muted font-italic"> You must be logged in to follow this user</small>
+						</div>
+					{% endif %}
+				{% endif %}
+			</div>
+		</div>
+	</div>
+
+	<div class="card-group p-1">
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">Followers</h5>
+				<ul class="list-group list-group-flush">
+					{% for follower in user.followers %}
+						<li class="list-group-item">
+							<a href="{{ path('micro_post_user', {'username': follower.username}) }}">
+							@{{ follower.username }}
+							</a>
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+		<div class="card p-1">
+			<div class="card-body">
+				<h5 class="card-title">Following</h5>
+				<ul class="list-group list-group-flush">
+					{% for following in user.following %}
+						<li class="list-group-item">
+							<a href="{{ path('micro_post_user', {'username': following.username}) }}">
+								@{{ following.username }}
+							</a>
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	{% for post in posts %}
+		<hr>
+		{{ include('micro-post/post.html.twig', { 'post': post }) }}
+
+		{% if is_granted('edit', post) %}
+			<small class="text-left mt-1 left-padding float-left">
+				<a href="{{ path('micro_post_edit', {'id': post.id}) }}" class="post-button">Edit</a>
+			</small>
+		{% endif %}
+
+		{% if is_granted('delete', post) %}
+			<small class="text-left mt-1 right-padding float-left">
+				<a href="{{ path('micro_post_delete', {'id': post.id}) }}" class="post-button">Delete</a>
+			</small>
+		{% endif %}
+		<div class="clearfix"></div>
+	{% endfor %}
+
+	<hr>
+	<small class="pt-2 mb-5 text-muted text-right right-padding float-right">End of posts</small>
+	<div class="clearfix"><br></div>
+{% endblock %}

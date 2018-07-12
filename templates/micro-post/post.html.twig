@@ -1,0 +1,45 @@
+<div class="media text-muted pt-3 post-padding">
+	{% set splitname = post.user.fullname|split(' ') %}
+	{% set i1 = attribute(splitname, 0)|first %}
+	{% set i2 = attribute(splitname, 1)|first %}
+	{% set initials = i1 ~ i2 %}
+	<img data-src="holder.js/48x48?text={{ initials }}&bg={{ initials|toHex }}&fg=fff&size=10" alt="" class="mr-2 rounded-circle">
+	<div class="media-body pb-3 mb-0 small lh-125">
+		<span class="d-block">
+			<a href="{{ path('micro_post_user', {'username': post.user.username}) }}">
+				<strong class="text-gray-dark">@{{ post.user.username }}</strong>
+			</a> <i>{{ post.user.fullname }}</i><small>· {{ post.time | date("d/m/Y") }}</small>
+		</span>
+		<p>
+			<a href="{{ path('micro_post_show', {'id': post.id }) }}">{{ post.text }}</a>
+		</p>
+	</div>
+</div>
+
+{% if app.user %}
+
+{% set isLiked = post.getLikedBy.contains(app.user) %}
+
+<div class="float-right pr-3">
+	{%  if app.user == post.user %}
+		<div class="btn btn-primary btn-sm disabled">Likes
+			<span class="badge badge-light">{{ post.getLikedBy.count }}</span>
+		</div>
+	{% else %}
+	<button class="btn btn-outline-secondary btn-sm" id="like-{{ post.id }}"
+			onclick='likePost("{{ path('likes_like', {'id': post.id}) }}", {{ post.id }})'
+			style="display: {% if not isLiked %} block {% else %} none {% endif %}">
+		Like
+		<span class="badge badge-light" id="like-badge-{{ post.id }}">{{ post.getLikedBy.count }}</span>
+	</button>
+
+	<button class="btn btn-outline-primary btn-sm" id="unlike-{{ post.id }}"
+			onclick='unlikePost("{{ path('likes_unlike', {'id': post.id}) }}", {{ post.id }})'
+			style="display: {% if isLiked %} block {% else %} none {% endif %}">
+		Unlike
+		<span class="badge badge-light" id="unlike-badge-{{ post.id }}">{{ post.getLikedBy.count }}</span>
+	</button>
+	{% endif %}
+</div>
+
+{% endif %}

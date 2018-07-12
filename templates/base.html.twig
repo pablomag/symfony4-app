@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+	{% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('build/css/app.css') }}">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+	{% endblock %}
+</head>
+
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark navbar-expand-md sticky-top bg-dark p-0">
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0"
+           href="{{ path('micro_post_index') }}">Tweeter</a>
+        <div class="w-100 order-1 order-md-0">
+            <ul class="navbar-nav px-3">
+                {% if is_granted('ROLE_USER') %}
+                    <li class="nav-item text-nowrap">
+                        <a class="nav-link" href="{{ path('micro_post_add') }}">Post</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="order-2 order-md-1">
+            <ul class="navbar-nav px-3">
+                {% if is_granted('ROLE_USER') %}
+                    <li class="nav-item text-nowrap border-right border-secondary pr-3">
+                        <a href="{{ path('notification_unseen') }}" class="nav-link">
+                            <span class="list-inline-item">Notifications</span>
+                            <span class="list-inline-item badge badge-light" id="notification-count">
+                                <i class="fa fa-sync fa-spin"></i>
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item text-nowrap">
+                        <a class="nav-link"
+                           href="{{ path('micro_post_user', {'username': app.user.username}) }}">{{ app.user.fullname }}</a>
+                    </li>
+                    <li class="nav-item text-nowrap nav-link"> | </li>
+                    <li class="nav-item text-nowrap">
+                        <a class="nav-link"
+                           href="{{ path('security_logout') }}">Sign out</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item text-nowrap">
+                        <a class="nav-link"
+                           href="{{ path('security_login') }}">Sign in</a>
+                    </li>
+                    <li class="nav-item text-nowrap nav-link"> | </li>
+                    <li class="nav-item text-nowrap">
+                        <a class="nav-link"
+                           href="{{ path('user_register') }}">Register</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <main role="main" class="container">
+        <div class="my-3 p-3 bg-white rounded box-shadow">
+
+            {% block body %}
+            {% endblock %}
+
+        </div>
+    </main>
+    {% block javascripts %}
+        <script src="{{ asset('build/js/app.js') }}"></script>
+
+        {% if is_granted('ROLE_USER') %}
+            <script>
+                /** Notifications script **/
+
+                function getNotificationCount()
+                {
+                	fetch (
+                        '{{ path('notification_unread') }}',
+                        {'credentials': 'include'}
+                    ).then(function(response)
+                    {
+                    	response.json().then(function(json)
+                        {
+                        	document.getElementById("notification-count").innerText = json.count;
+							setTimeout(getNotificationCount, 10000);
+                        });
+                    }).catch(function(reason)
+                    {
+                    	console.log(reason);
+                    });
+                }
+
+				setTimeout(getNotificationCount, 2000);
+            </script>
+
+            <script>
+				/** Like-unlike script **/
+
+                function likePost(path, id) {
+                    likeUnlike
+                    (
+                        document.getElementById('like-' + id),
+                        document.getElementById('unlike-' + id),
+                        document.getElementById('unlike-badge-' + id),
+                        path
+                    );
+                }
+
+                function unlikePost(path, id) {
+                    likeUnlike
+                    (
+                        document.getElementById('unlike-' + id),
+                        document.getElementById('like-' + id),
+                        document.getElementById('like-badge-' + id),
+                        path
+                    );
+                }
+
+                function switchButtons(button, oppositeButton) {
+                    button.disabled = false;
+                    button.style.display = 'none';
+                    oppositeButton.style.display = 'block';
+                }
+
+                function likeUnlike(button, oppositeButton, likeCount, path)
+                {
+                    button.disabled = true;
+
+                    fetch (
+                    	path,
+                        {'credentials': 'include'}
+                    ).then(function(response)
+                    {
+                        response.json().then(function(json)
+                        {
+                            likeCount.innerText = json.count;
+                            switchButtons(button, oppositeButton);
+                        });
+                    }).catch(function(reason)
+                    {
+                    	console.log(reason);
+                        switchButtons(button, oppositeButton);
+                    });
+
+                    event.preventDefault();
+                }
+            </script>
+		{% endif %}
+    {% endblock %}
+
+</body>
+</html>

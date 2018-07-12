@@ -1,0 +1,12 @@
+<h3>Welcome to App!</h3>
+
+Hello {{ user.fullname }}! Thank you for registering in App!<br>
+<br>
+To confirm your registration please follow the link below.<br>
+<a href="{{ url('security_confirm', {'token': user.confirmationToken}) }}">Confirm e-mail registration</a><br>
+<br>
+To login, just click <a href="{{ url('security_login') }}">here</a><br>
+<br>
+Enjoy App!<br>
+The App Team.<br>
+<br>

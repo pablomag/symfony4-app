@@ -1,0 +1,8 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Post {{ post.id }}{% endblock %}
+
+{% block body %}
+	{{ include('micro-post/post.html.twig', { 'post': post }) }}
+	<div class="clearfix pb-2"></div>
+{% endblock %}

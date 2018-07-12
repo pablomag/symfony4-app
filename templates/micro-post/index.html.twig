@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Post index{% endblock %}
+
+{% block body %}
+	{% for message in app.flashes('notice') %}
+		<div class="alert alert-success flash-message">{{ message }}</div>
+	{% endfor %}
+
+	<h6 class="pb-2 mb-0">Recent updates</h6>
+
+	{% if usersToFollow|length > 0 %}
+		<hr>
+
+		<p>You are currently not following any users.</p>
+		<p>We found some popular users for you to follow:</p>
+
+		{% for userToFollow in usersToFollow %}
+			<a href="{{ path('micro_post_user', {'username': userToFollow.username}) }}">
+				@{{ userToFollow.username }}
+			</a>
+		{% endfor %}
+	{% else %}
+
+		{% for post in posts %}
+			<hr>
+			{{ include('micro-post/post.html.twig', { 'post': post }) }}
+
+			{% if is_granted('edit', post) %}
+			<small class="text-left mt-1 left-padding float-left">
+				<a href="{{ path('micro_post_edit', {'id': post.id}) }}" class="post-button">Edit</a>
+			</small>
+			{% endif %}
+
+			{% if is_granted('delete', post) %}
+			<small class="text-left mt-1 right-padding float-left">
+				<a href="{{ path('micro_post_delete', {'id': post.id}) }}" class="post-button">Delete</a>
+			</small>
+			{% endif %}
+			<div class="clearfix"></div>
+		{% endfor %}
+
+		<hr>
+		<small class="pt-2 mb-5 text-muted text-right right-padding float-right">End of posts</small>
+		<div class="clearfix"><br></div>
+	{% endif %}
+{% endblock %}
